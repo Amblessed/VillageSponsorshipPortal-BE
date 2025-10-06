@@ -1,0 +1,31 @@
+{
+  "firstName": "Chinonso",
+  "middleName": "Emeka",
+  "lastName": "Okafor",
+  "birthDate": "2015-04-12",
+  "gender": "MALE",
+  "village": "UMUEZE",
+  "classLevel": "PRIMARY_THREE",
+  "story": "Chinonso is a bright and curious child who dreams of becoming a doctor.",
+  "sponsored": false,
+  "parent": {
+    "father": {
+      "firstName": "Ifeanyi",
+      "middleName": "John",
+      "lastName": "Okafor",
+      "occupation": "Farmer",
+      "phone": "08012345678",
+      "alive": true
+    },
+    "mother": {
+      "firstName": "Ngozi",
+      "middleName": "Grace",
+      "lastName": "Okafor",
+      "occupation": "Trader",
+      "phone": "08087654321",
+      "alive": true
+    },
+    "parentsDivorced": false,
+    "numberOfChildren": 3
+  }
+}
