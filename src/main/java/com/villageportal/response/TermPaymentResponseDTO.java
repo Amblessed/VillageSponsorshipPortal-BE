@@ -10,6 +10,7 @@ package com.villageportal.response;
 
 
 import com.villageportal.enums.ClassLevel;
+import com.villageportal.enums.Term;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 public class TermPaymentResponseDTO {
 
     private Long id;
-    private int termNumber;
+    private Term term;
     private ClassLevel classLevel;
     private int totalPaid = 0;
     private LocalDate paymentDate;

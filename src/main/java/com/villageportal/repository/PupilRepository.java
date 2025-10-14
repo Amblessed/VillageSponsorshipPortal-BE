@@ -18,6 +18,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -48,7 +49,12 @@ public interface PupilRepository extends JpaRepository<Pupil, Long> {
     @Query("SELECT p FROM Pupil p WHERE p.sponsored = false AND p.village = :village")
     List<Pupil> findByIsSponsoredFalseAndVillage(@Param("village") Village village);
 
-    @EntityGraph(attributePaths = {"payments", "guardian"})
+    @Query("SELECT DISTINCT p FROM ClassProgression cp JOIN cp.pupil p WHERE cp.classLevel = :classLevel")
+    List<Pupil> findPupilsByPastClassLevel(@Param("classLevel") ClassLevel classLevel);
+
+
+    @Transactional(readOnly = true)
+    @EntityGraph(attributePaths = {"payments", "guardian", "parent"})
     @Query("SELECT p FROM Pupil p WHERE p.firstName = :firstName AND p.lastName = :lastName AND p.birthDate = :birthDate")
     Optional<Pupil> findByFirstNameAndLastNameAndBirthDate(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("birthDate") LocalDate birthDate);
 

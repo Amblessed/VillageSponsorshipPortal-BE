@@ -10,6 +10,7 @@ package com.villageportal.response;
 
 
 
+import com.villageportal.enums.Relationship;
 import lombok.Data;
 
 
@@ -20,6 +21,6 @@ public class GuardianResponseDTO {
     private String middleName;
     private String lastName;
     private String phoneNumber;
-    private String relationshipToPupil; // e.g., uncle, aunt, neighbor
+    private Relationship relationship; // e.g., uncle, aunt, neighbor
     private String address;
 }

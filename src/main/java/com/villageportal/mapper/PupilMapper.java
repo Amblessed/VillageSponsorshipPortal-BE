@@ -53,11 +53,11 @@ public class PupilMapper {
         dto.setMiddleName(pupil.getMiddleName());
         dto.setLastName(pupil.getLastName());
         dto.setBirthDate(pupil.getBirthDate());
-        dto.setClassLevelLabel(pupil.getClassLevel().toLabel());
+        dto.setClassLevel(pupil.getClassLevel().toLabel());
         dto.setVillage(pupil.getVillage().toLabel());
         dto.setStory(pupil.getStory());
         dto.setSponsored(pupil.isSponsored());
-        dto.setFormattedRegistrationDate(pupil.getFormattedRegistrationDate());
+        dto.setRegistrationDate(pupil.getFormattedRegistrationDate());
 
         dto.setPayments(pupil.getPayments().stream().map(this::toTermPaymentResponseDTO).toList());
 
@@ -98,7 +98,7 @@ public class PupilMapper {
 
         GuardianResponseDTO responseDTO = new GuardianResponseDTO();
         responseDTO.setPhoneNumber(guardian.getPhoneNumber());
-        responseDTO.setRelationshipToPupil(guardian.getRelationship().toLabel());
+        responseDTO.setRelationship(guardian.getRelationship());
         responseDTO.setAddress(guardian.getAddress());
         responseDTO.setFirstName(guardian.getFirstName());
         responseDTO.setMiddleName(guardian.getMiddleName());
@@ -109,7 +109,7 @@ public class PupilMapper {
     private TermPaymentResponseDTO toTermPaymentResponseDTO(TermPayment termPayment) {
         TermPaymentResponseDTO responseDTO = new TermPaymentResponseDTO();
         responseDTO.setId(termPayment.getId());
-        responseDTO.setTermNumber(termPayment.getTermNumber());
+        responseDTO.setTerm(termPayment.getTerm());
         responseDTO.setClassLevel(termPayment.getClassLevel());
         responseDTO.setTotalPaid(termPayment.getTotalPaid());
         responseDTO.setPaymentDate(termPayment.getPaymentDate());

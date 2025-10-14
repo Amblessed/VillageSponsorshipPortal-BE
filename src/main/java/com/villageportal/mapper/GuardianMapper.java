@@ -10,7 +10,6 @@ package com.villageportal.mapper;
 
 
 import com.villageportal.entity.Guardian;
-import com.villageportal.enums.Relationship;
 import com.villageportal.request.GuardianRequestDTO;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class GuardianMapper {
         guardian.setOccupation(dto.getOccupation());
         guardian.setPhoneNumber(dto.getPhoneNumber());
         guardian.setAddress(dto.getAddress());
-        guardian.setRelationship(Relationship.valueOf(dto.getRelationship().toUpperCase()));
+        guardian.setRelationship(dto.getRelationship());
 
         return guardian;
     }

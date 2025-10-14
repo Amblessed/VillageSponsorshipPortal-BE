@@ -91,17 +91,15 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail handleAccessDenied(DataIntegrityViolationException ex) {
+    @ExceptionHandler({DataIntegrityViolationException.class, DuplicateGradeException.class})
+    public ProblemDetail handleConflictException(Exception ex) {
         Map<String, Object> map = new HashMap<>();
         map.put("timestamp", LocalDateTime.now().toString());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setType(URI.create("http://localhost:8080/api/v1/common-errors"));
-        if (ex.getCause() instanceof ConstraintViolationException || ex.getMessage().contains("employee_email_key")) {
-            problemDetail.setTitle(HttpStatus.CONFLICT.getReasonPhrase());
-            problemDetail.setDetail("Email already exists.");
-            problemDetail.setProperties(map);
-        }
+        problemDetail.setTitle(HttpStatus.CONFLICT.getReasonPhrase());
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setProperties(map);
         return problemDetail;
     }
 

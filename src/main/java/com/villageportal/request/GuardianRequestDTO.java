@@ -8,6 +8,7 @@ package com.villageportal.request;
  * @Created: 03-Oct-25
  */
 
+import com.villageportal.enums.Relationship;
 import lombok.*;
 
 @Data
@@ -21,6 +22,6 @@ public class GuardianRequestDTO {
     private String occupation;
     private String phoneNumber;
     private String address;
-    private String relationship;
+    private Relationship relationship;
 
 }

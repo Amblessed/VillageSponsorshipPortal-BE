@@ -30,10 +30,10 @@ public class PersonDetails {
     @Column(nullable = false, length = 25)
     private String lastName;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String occupation;
 
-    @Column(nullable = false, length = 15, unique = true)
+    @Column(length = 15, unique = true)
     private String phone;
 
     private Boolean alive = true;

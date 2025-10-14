@@ -9,7 +9,6 @@ package com.villageportal.enums;
  */
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.Getter;
 
 import java.util.Arrays;
 

@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -120,11 +121,11 @@ public class PupilServiceImpl implements PupilService{
 
 
         Set<String> existingKeys = existingPupil.getPayments().stream()
-                .map(tp -> tp.getTermNumber() + "#" + tp.getClassLevel())
+                .map(tp -> tp.getTerm() + "#" + tp.getClassLevel())
                 .collect(Collectors.toSet());
 
         for (TermPayment termPayment : pupil.getPayments()) {
-            String key = termPayment.getTermNumber() + "#" + termPayment.getClassLevel();
+            String key = termPayment.getTerm() + "#" + termPayment.getClassLevel();
             if (existingKeys.add(key)) { // add() returns false if key already exists
                 existingPupil.addTermPayment(termPayment);
             }
@@ -174,6 +175,36 @@ public class PupilServiceImpl implements PupilService{
                 .orElseThrow(() -> new EntityNotFoundException("Pupil not found"));
         pupil.setSponsored(true);
         pupilRepository.save(pupil);
+    }
+
+    @Transactional
+    public void promotePupil(Pupil pupil, ClassLevel nextLevel, LocalDate startDate) {
+        pupil.promoteToNextClass(nextLevel, startDate);
+        pupilRepository.save(pupil);
+    }
+
+    @Transactional
+    public void promoteEligiblePupils(LocalDate promotionDate) {
+        List<Pupil> allPupils = pupilRepository.findAll();
+
+        for (Pupil pupil : allPupils) {
+            ClassLevel current = pupil.getClassLevel();
+            ClassLevel next = getNextClassLevel(current);
+
+            if (next != null) {
+                pupil.promoteToNextClass(next, promotionDate);
+                pupilRepository.save(pupil);
+            }
+        }
+    }
+
+    private ClassLevel getNextClassLevel(ClassLevel current) {
+        if (current == null) return null;
+
+        ClassLevel[] levels = ClassLevel.values();
+        int index = Arrays.asList(levels).indexOf(current);
+
+        return (index >= 0 && index < levels.length - 1) ? levels[index + 1] : null;
     }
 
 

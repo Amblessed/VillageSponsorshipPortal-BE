@@ -8,6 +8,7 @@ package com.villageportal.entity;
  * @Created: 30-Sep-25
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,8 +33,8 @@ public class Parent{
     @AttributeOverride(name = "firstName", column = @Column(name = "mother_first_name", nullable = false))
     @AttributeOverride(name = "middleName", column = @Column(name = "mother_middle_name"))
     @AttributeOverride(name = "lastName", column = @Column(name = "mother_last_name", nullable = false))
-    @AttributeOverride(name = "phone", column = @Column(name = "mother_phone", nullable = false))
-    @AttributeOverride(name = "occupation", column = @Column(name = "mother_occupation", nullable = false))
+    @AttributeOverride(name = "phone", column = @Column(name = "mother_phone"))
+    @AttributeOverride(name = "occupation", column = @Column(name = "mother_occupation"))
     @AttributeOverride(name = "alive", column = @Column(name = "mother_alive"))
     private PersonDetails mother;
 
@@ -41,6 +42,7 @@ public class Parent{
     private int numberOfChildren;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Pupil> pupils = new HashSet<>();
 
 
@@ -49,12 +51,18 @@ public class Parent{
         pupil.setParent(this);
     }
 
-    public String getFatherFullName() {
-        return father != null ? father.getFullName() : "";
-    }
+    @PrePersist
+    @PreUpdate
+    private void sanitizeDeceasedParentFields() {
+        if (father != null && Boolean.FALSE.equals(father.getAlive())) {
+            father.setOccupation(null);
+            father.setPhone(null);
+        }
 
-    public String getMotherFullName() {
-        return mother != null ? mother.getFullName() : "";
+        if (mother != null && Boolean.FALSE.equals(mother.getAlive())) {
+            mother.setOccupation(null);
+            mother.setPhone(null);
+        }
     }
 
 

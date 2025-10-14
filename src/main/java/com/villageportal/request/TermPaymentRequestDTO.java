@@ -10,10 +10,11 @@ package com.villageportal.request;
 
 
 import com.villageportal.entity.Installment;
-import com.villageportal.entity.Pupil;
 import com.villageportal.enums.ClassLevel;
+import com.villageportal.enums.Term;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -21,9 +22,11 @@ import java.util.List;
 public class TermPaymentRequestDTO {
 
 
-    private Pupil pupil;
-    private int termNumber; // 1, 2, or 3
-    private ClassLevel classLevel; // e.g., Primary 1, 2, etc.
+    private String firstName;
+    private String lastName;
+    private LocalDate birthDate;
+    private ClassLevel classLevel;
+    private Term term;
     private int totalPaid = 0;
     private boolean fullyPaid = false;
     private List<Installment> installments;
