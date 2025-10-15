@@ -53,8 +53,8 @@ public class PupilMapper {
         dto.setMiddleName(pupil.getMiddleName());
         dto.setLastName(pupil.getLastName());
         dto.setBirthDate(pupil.getBirthDate());
-        dto.setClassLevel(pupil.getClassLevel().toLabel());
-        dto.setVillage(pupil.getVillage().toLabel());
+        dto.setClassLevel(pupil.getClassLevel());
+        dto.setVillage(pupil.getVillage());
         dto.setStory(pupil.getStory());
         dto.setSponsored(pupil.isSponsored());
         dto.setRegistrationDate(pupil.getFormattedRegistrationDate());

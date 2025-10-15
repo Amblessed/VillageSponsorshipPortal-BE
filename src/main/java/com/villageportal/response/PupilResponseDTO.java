@@ -10,6 +10,8 @@ package com.villageportal.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.villageportal.enums.ClassLevel;
+import com.villageportal.enums.Village;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -24,8 +26,8 @@ public class PupilResponseDTO {
     private String middleName;
     private String lastName;
     private LocalDate birthDate;
-    private String classLevel;
-    private String village;
+    private ClassLevel classLevel;
+    private Village village;
     private String story;
     private boolean sponsored;
     private String registrationDate;

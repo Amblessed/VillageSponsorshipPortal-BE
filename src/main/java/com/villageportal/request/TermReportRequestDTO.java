@@ -23,7 +23,7 @@ public class TermReportRequestDTO {
     private Long pupilId;
 
     @NotNull
-    private Term term; // TERM_ONE, TERM_TWO, TERM_THREE
+    private Term term;
 
     @NotBlank
     private String summary;
