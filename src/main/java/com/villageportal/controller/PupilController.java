@@ -31,7 +31,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "https://village-sponsorship-portal-fe.vercel.app"
+})
 @RestController
 @RequestMapping("/api/pupils")
 @RequiredArgsConstructor
