@@ -31,10 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 
-@CrossOrigin(origins = {
-        "http://localhost:3000",
-        "https://village-sponsorship-portal-fe.vercel.app"
-})
+
 @RestController
 @RequestMapping("/api/pupils")
 @RequiredArgsConstructor
@@ -50,7 +47,7 @@ public class PupilController {
         return ResponseEntity.ok(pupils);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<PupilResponseDTO>> getAllPupils() {
         List<PupilResponseDTO> pupils = pupilService.getAllPupils();
         return ResponseEntity.ok(pupils);
@@ -121,7 +118,5 @@ public class PupilController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("🚨 Something went wrong.");
         }
     }
-
-
 }
 

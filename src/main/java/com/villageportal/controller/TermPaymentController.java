@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = {
-        "http://localhost:3000",
-        "https://village-sponsorship-portal-fe.vercel.app"
-})
+
 @RestController
 @RequestMapping("/api/term-payments")
 @RequiredArgsConstructor
