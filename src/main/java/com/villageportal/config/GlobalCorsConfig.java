@@ -16,14 +16,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class GlobalCorsConfig implements WebMvcConfigurer {
 
+    private static final String[] ALLOWED_ORIGINS = {
+            "http://localhost:3000",
+            "https://village-sponsorship-portal-fe.vercel.app"
+    };
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(
-                        "http://localhost:3000",
-                        "https://village-sponsorship-portal-fe.vercel.app")
-                .allowedMethods("*")
-                .allowedHeaders("*")
+        registry.addMapping("/api/**")
+                .allowedOrigins(ALLOWED_ORIGINS)
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("Content-Type", "Authorization", "X-Sponsor-Token")
+                .exposedHeaders("X-Sponsor-Feedback")
                 .allowCredentials(true);
     }
 }
