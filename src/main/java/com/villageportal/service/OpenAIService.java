@@ -20,21 +20,29 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
-public class Rough {
+
+@Service
+public class OpenAIService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private String executeOpenAiRequest() throws IOException {
-        HttpPost post = getHttpPost();
+    public String executeOpenAiRequest(String name, String term, List<String> subjects, List<String> scores, List<String> descriptors) throws IOException {
+        HttpPost post = getHttpPupilCommentPost(name, term, subjects, scores, descriptors);
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             return client.execute(post, response -> {
                 int status = response.getCode();
                 if (status >= 200 && status < 300) {
-                    return response.getEntity() != null ? EntityUtils.toString(response.getEntity()) : null;
+                    if (response.getEntity() != null) {
+                        String apiResponse = EntityUtils.toString(response.getEntity());
+                        JsonNode firstChoice = extractFirstChoice(apiResponse);
+                        return extractContentFromChoice(firstChoice);
+                    }
+                    return null;
                 }
                 else {
                     throw new IOException("Unexpected response status: " + status);
@@ -43,12 +51,10 @@ public class Rough {
         }
     }
 
-    private HttpPost getHttpPost () throws IOException {
+
+    public HttpPost getHttpPupilCommentPost (String name, String term, List<String> subjects, List<String> scores, List<String> descriptors) throws IOException {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
         String apiKey = System.getenv("OPENAI_API_KEY");
-        List<String> subjects = List.of("Math", "English", "Science", "Social Studies");
-        List<String> scores = List.of("85", "80", "45", "90");
-        List<String> descriptors = List.of("Good", "Improving", "Needs Improvement");
         String prompt = String.format("""
             Name: %s
             Term: %s
@@ -57,7 +63,8 @@ public class Rough {
             Descriptors: %s
 
             Write a warm, sponsor-friendly comment in 2–3 sentences. Be honest but encouraging. Avoid repeating descriptors directly.
-            """, "Emeka Ofor", "First Term", String.join(", ", subjects), String.join(", ", scores), String.join(", ", descriptors));
+            Look at the scores in each subject and commend her where she excels and where she needs improvement.
+            """, name, term, String.join(", ", subjects), String.join(", ", scores), String.join(", ", descriptors));
 
         ObjectNode systemMessage = mapper.createObjectNode();
         systemMessage.put("role", "system");
@@ -66,7 +73,6 @@ public class Rough {
         ObjectNode userMessage = mapper.createObjectNode();
         userMessage.put("role", "user");
         userMessage.put("content", prompt);
-
 
         ArrayNode messagesArray = mapper.createArrayNode();
         messagesArray.add(systemMessage);
@@ -84,7 +90,7 @@ public class Rough {
         return post;
     }
 
-    private String extractContentFromChoice(JsonNode firstChoice) {
+    public String extractContentFromChoice(JsonNode firstChoice) {
         JsonNode message = firstChoice.path("message");
         if (message.isMissingNode() || !message.has("content")) {
             if (firstChoice.has("text")) {
@@ -97,7 +103,7 @@ public class Rough {
         }
     }
 
-    private JsonNode extractFirstChoice(String result) throws IOException {
+    public JsonNode extractFirstChoice(String result) throws IOException {
         if (result == null) {
             throw new OpenAIException("Empty response from OpenAI API");
         }
@@ -110,15 +116,4 @@ public class Rough {
         return choices.get(0);
     }
 
-    public static void main(String[] args) throws IOException {
-
-        Rough rough = new Rough();
-        String result = rough.executeOpenAiRequest();
-        JsonNode firstChoice = rough.extractFirstChoice(result);
-        String content = rough.extractContentFromChoice(firstChoice);
-
-        System.out.println(result);
-        System.out.println(firstChoice);
-        System.out.println(content);
-    }
 }

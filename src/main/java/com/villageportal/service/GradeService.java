@@ -15,11 +15,13 @@ import com.villageportal.exception.DuplicateGradeException;
 import com.villageportal.exception.ResourceNotFoundException;
 import com.villageportal.repository.GradeRepository;
 import com.villageportal.repository.PupilRepository;
+import com.villageportal.response.GradeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +76,20 @@ public class GradeService {
     }
 
 
-    public List<Grade> findPupilGrades(String firstName, String lastName, LocalDate birthDate) {
-        return gradeRepository.findByPupilGrades( firstName, lastName, birthDate);
+    public List<GradeResponse> findPupilGrades(String firstName, String lastName, LocalDate birthDate) {
+        List<Grade> grades = gradeRepository.findByPupilGrades( firstName, lastName, birthDate);
+        List<GradeResponse> gradeResponses = new ArrayList<>();
+        for (Grade grade : grades) {
+            GradeResponse gradeResponse = new GradeResponse();
+            gradeResponse.setSubject(grade.getSubject());
+            gradeResponse.setTerm(grade.getTerm().toLabel());
+            gradeResponse.setAssessmentType(grade.getAssessmentType().toLabel());
+            gradeResponse.setClassLevel(grade.getClassLevel().toLabel());
+            gradeResponse.setScore(grade.getScore());
+            gradeResponse.setGradeLetter(grade.getGradeLetter());
+            gradeResponse.setDescriptor(grade.getDescriptor().toLabel());
+            gradeResponses.add(gradeResponse);
+        }
+        return gradeResponses;
     }
 }

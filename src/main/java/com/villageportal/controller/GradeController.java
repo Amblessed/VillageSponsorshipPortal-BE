@@ -9,6 +9,7 @@ package com.villageportal.controller;
  */
 
 import com.villageportal.entity.Grade;
+import com.villageportal.response.GradeResponse;
 import com.villageportal.service.GradeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,8 @@ public class GradeController {
     }
 
     @GetMapping("/pupil")
-    public ResponseEntity<List<Grade>> getGradesByPupil(@RequestParam String firstName, @RequestParam String lastName, @RequestParam LocalDate birthDate) {
-        List<Grade> grades = gradeService.findPupilGrades(firstName, lastName, birthDate);
+    public ResponseEntity<List<GradeResponse>> getGradesByPupil(@RequestParam String firstName, @RequestParam String lastName, @RequestParam LocalDate birthDate) {
+        List<GradeResponse> grades = gradeService.findPupilGrades(firstName, lastName, birthDate);
         return ResponseEntity.ok(grades);
     }
 
