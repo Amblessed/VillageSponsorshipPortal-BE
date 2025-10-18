@@ -1,13 +1,10 @@
 package com.villageportal.service;
 
-
-
 /*
  * @Project Name: VillageSponsorshipPortal
  * @Author: Okechukwu Bright Onwumere
  * @Created: 13-Oct-25
  */
-
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,95 +22,118 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-
 @Service
 public class OpenAIService {
 
+    private static final String API_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String MODEL_NAME = "gpt-4o-mini";
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String executeOpenAiRequest(String name, String term, List<String> subjects, List<String> scores, List<String> descriptors) throws IOException {
-        HttpPost post = getHttpPupilCommentPost(name, term, subjects, scores, descriptors);
+    /**
+     * Executes a request to the OpenAI API and returns the model's response text.
+     */
+    public String executeOpenAiRequest(String name, String term, List<String> subjects,
+                                       List<String> scores, List<String> descriptors) throws IOException {
+
         try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost post = buildRequest(name, term, subjects, scores, descriptors);
             return client.execute(post, response -> {
                 int status = response.getCode();
-                if (status >= 200 && status < 300) {
-                    if (response.getEntity() != null) {
-                        String apiResponse = EntityUtils.toString(response.getEntity());
-                        JsonNode firstChoice = extractFirstChoice(apiResponse);
-                        return extractContentFromChoice(firstChoice);
-                    }
-                    return null;
-                }
-                else {
+                if (status < 200 || status >= 300) {
                     throw new IOException("Unexpected response status: " + status);
                 }
+                String apiResponse = EntityUtils.toString(response.getEntity());
+                JsonNode choice = extractFirstChoice(apiResponse);
+                return extractContent(choice);
             });
         }
     }
 
+    /**
+     * Builds the HTTP POST request body for the pupil comment generation.
+     */
+    private HttpPost buildRequest(String name, String term, List<String> subjects,
+                                  List<String> scores, List<String> descriptors) throws IOException {
 
-    public HttpPost getHttpPupilCommentPost (String name, String term, List<String> subjects, List<String> scores, List<String> descriptors) throws IOException {
-        String apiUrl = "https://api.openai.com/v1/chat/completions";
         String apiKey = System.getenv("OPENAI_API_KEY");
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new OpenAIException("OpenAI API key not found in environment variables.");
+        }
+
         String prompt = String.format("""
-            Name: %s
-            Term: %s
-            Subjects: %s
-            Scores: %s
-            Descriptors: %s
+                Student Name: %s
+                Term: %s
+                Subjects: %s
+                Scores: %s
+                Descriptors: %s
+                
+                As a professional teacher, write a concise, sponsor-appropriate report comment in 2–3 sentences.
+                Maintain a formal and balanced tone that reflects the pupil’s academic performance and attitude during the term.
+                Acknowledge areas of strong achievement and note aspects where further progress or consistency is encouraged.
+                Avoid repeating the descriptors directly; instead, paraphrase them naturally.
+                """, name, term, String.join(", ", subjects), String.join(", ", scores), String.join(", ", descriptors));
 
-            Write a warm, sponsor-friendly comment in 2–3 sentences. Be honest but encouraging. Avoid repeating descriptors directly.
-            Look at the scores in each subject and commend her where she excels and where she needs improvement.
-            """, name, term, String.join(", ", subjects), String.join(", ", scores), String.join(", ", descriptors));
+        ObjectNode requestBody = mapper.createObjectNode()
+                .put("model", MODEL_NAME)
+                .set("messages", buildMessages(prompt));
 
-        ObjectNode systemMessage = mapper.createObjectNode();
-        systemMessage.put("role", "system");
-        systemMessage.put("content", "You are a compassionate teacher who writes warm, sponsor-friendly report card comments.");
-
-        ObjectNode userMessage = mapper.createObjectNode();
-        userMessage.put("role", "user");
-        userMessage.put("content", prompt);
-
-        ArrayNode messagesArray = mapper.createArrayNode();
-        messagesArray.add(systemMessage);
-        messagesArray.add(userMessage);
-
-        ObjectNode requestBody = mapper.createObjectNode();
-        requestBody.put("model", "gpt-4o-mini");
-        requestBody.set("messages", messagesArray);
-        String jsonBody =  mapper.writeValueAsString(requestBody);
-
-        HttpPost post = new HttpPost(apiUrl);
+        HttpPost post = new HttpPost(API_URL);
         post.setHeader("Authorization", "Bearer " + apiKey);
         post.setHeader("Content-Type", "application/json");
-        post.setEntity(new StringEntity(jsonBody, ContentType.APPLICATION_JSON));
+        post.setEntity(new StringEntity(mapper.writeValueAsString(requestBody), ContentType.APPLICATION_JSON));
+
         return post;
     }
 
-    public String extractContentFromChoice(JsonNode firstChoice) {
-        JsonNode message = firstChoice.path("message");
-        if (message.isMissingNode() || !message.has("content")) {
-            if (firstChoice.has("text")) {
-                return firstChoice.get("text").asText().trim();
-            } else {
-                throw new OpenAIException("No content returned from OpenAI API.");
-            }
-        } else {
-            return message.get("content").asText().trim();
-        }
+    /**
+     * Builds the chat messages array for the API request.
+     */
+    private ArrayNode buildMessages(String prompt) {
+        ArrayNode messages = mapper.createArrayNode();
+
+        messages.add(createMessage("system",
+                "You are a compassionate teacher who writes warm, sponsor-friendly report card comments."));
+        messages.add(createMessage("user", prompt));
+
+        return messages;
     }
 
-    public JsonNode extractFirstChoice(String result) throws IOException {
-        if (result == null) {
-            throw new OpenAIException("Empty response from OpenAI API");
+    private ObjectNode createMessage(String role, String content) {
+        ObjectNode message = mapper.createObjectNode();
+        message.put("role", role);
+        message.put("content", content);
+        return message;
+    }
+
+    /**
+     * Extracts the first valid choice node from the API response.
+     */
+    private JsonNode extractFirstChoice(String result) throws IOException {
+        if (result == null || result.isBlank()) {
+            throw new OpenAIException("Empty response from OpenAI API.");
         }
+
         JsonNode root = mapper.readTree(result);
         JsonNode choices = root.path("choices");
 
-        if (!choices.isArray() || choices.isEmpty() || choices.get(0) == null) {
+        if (!choices.isArray() || choices.isEmpty()) {
             throw new OpenAIException("No valid choice returned from OpenAI API.");
         }
+
         return choices.get(0);
     }
 
+    /**
+     * Extracts the message content from the choice node.
+     */
+    private String extractContent(JsonNode choice) {
+        JsonNode message = choice.path("message");
+        if (message.has("content")) {
+            return message.get("content").asText().trim();
+        }
+        if (choice.has("text")) {
+            return choice.get("text").asText().trim();
+        }
+        throw new OpenAIException("No content returned from OpenAI API.");
+    }
 }
