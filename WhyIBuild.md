@@ -16,24 +16,22 @@ are honored and visible to those who support them.
 - Preserve legacy: every child’s story becomes part of a lasting digital archive
 
 ## 🧱 Technical Architecture
-| Layer	       | Technology                    | 	Purpose                             |  
-|-----------------|-------------------------------|----------------------------------------|
-| Backend         | Java, Spring Boot, REST APIs  | Modular data handling, secure access   |
-| Frontend	       | ReactJS	                   | Intuitive UX, multilingual onboarding  |
-| PDF Engine	   | Custom export logic	       | Branded, emotionally resonant reports  |
-| AI Integration  | OpenAI API	                   | Deterministic teacher comments         |
-| Security	       | OAuth2/JWT	                   | Protect pupil and sponsor data         |
-| Future Plans	   | Docker, CI/CD, Microservices  | Scalability and maintainability        |
+| Layer	       | Technology                   | 	Purpose                            |  
+|-----------------|------------------------------|----------------------------------------|
+| Backend         | Java, Spring Boot, REST APIs | Modular data handling, secure access   |
+| Frontend	       | React	                      | Intuitive UX, multilingual onboarding  |
+| PDF Engine	   | Custom export logic	      | Branded, emotionally resonant reports  |
+| AI Integration  | OpenAI API	                  | Deterministic teacher comments         |
+| Security	       | OAuth2/JWT	                  | Protect pupil and sponsor data         |
+| Future Plans	   | Docker, CI/CD, Microservices | Scalability and maintainability        |
 
 ## 🌍 Social & Emotional Impact
-
 - **For pupils**: Their stories are preserved and honored
 - **For sponsors**: Their support is reflected in clear, heartfelt reports
 - **For the school**: A digital legacy begins—one that can grow with the community
 - **For the village**: A model of dignity-driven technology that can inspire other institutions
 
 ## 📈 Roadmap
-
 | Phase   | Milestone                                                      |
 |---------|----------------------------------------------------------------|
 | 1	   | Core backend/frontend for pupil data entry                     |

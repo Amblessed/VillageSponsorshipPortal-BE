@@ -21,7 +21,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +50,6 @@ public interface PupilRepository extends JpaRepository<Pupil, Long> {
 
     @Query("SELECT DISTINCT p FROM ClassProgression cp JOIN cp.pupil p WHERE cp.classLevel = :classLevel")
     List<Pupil> findPupilsByPastClassLevel(@Param("classLevel") ClassLevel classLevel);
-
 
     @Transactional(readOnly = true)
     @EntityGraph(attributePaths = {"payments", "guardian", "parent"})
