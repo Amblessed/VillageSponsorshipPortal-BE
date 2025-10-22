@@ -61,7 +61,7 @@ public class OpenAIService {
         }
 
         String prompt = String.format("""
-                Student Name: %s
+                Pupil Name: %s
                 Term: %s
                 Subjects: %s
                 Scores: %s
